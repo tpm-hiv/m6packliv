@@ -1,0 +1,1873 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>M6 XML to BATCH Packliv XLSX</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #000000;
+            color: #00FF00;
+            font-family: 'Orbitron', 'Courier New', monospace;
+            min-height: 100vh;
+            background-image: 
+                radial-gradient(circle at 25% 25%, #003300 0%, transparent 50%),
+                radial-gradient(circle at 75% 75%, #001100 0%, transparent 50%);
+        }
+
+        .container {
+            max-width: 1600px; /* Increased from 1200px for large screens */
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 20px;
+            border: 2px solid #00FF00;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: 900;
+            animation: pulse 2s infinite;
+            background: radial-gradient(circle, #001100, #000000);
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 10px #00FF00; }
+            50% { box-shadow: 0 0 30px #00FF00, 0 0 40px #00FFFF; }
+            100% { box-shadow: 0 0 10px #00FF00; }
+        }
+
+        h1 {
+            font-size: 2.5em;
+            color: #FFFFFF;
+            text-shadow: 0 0 10px #00FFFF;
+            margin-bottom: 10px;
+        }
+
+        h4 {
+            font-size: 1.2em;
+            color: #00FFFF;
+            text-shadow: 0 0 5px #00FFFF;
+            font-weight: 700;
+        }
+
+        .subtitle {
+            color: #00FF00;
+            font-size: 1.2em;
+            margin-bottom: 30px;
+        }
+
+        .settings-panel {
+            background: linear-gradient(145deg, #111111, #000000);
+            border: 1px solid #00FF00;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.2);
+        }
+
+        .settings-row {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            min-width: 200px; /* Increased from 150px */
+        }
+
+        label {
+            color: #00FF00;
+            margin-bottom: 5px;
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.9em;
+        }
+
+        select, input[type="text"] {
+            background: #000000;
+            border: 1px solid #00FFFF;
+            color: #FFFFFF;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: 'Orbitron', monospace;
+            font-size: 14px;
+            width: 100%; /* Ensure full width */
+        }
+
+        select:focus, input[type="text"]:focus {
+            outline: none;
+            border-color: #00FF00;
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+        }
+
+        .drop-zone {
+            border: 2px dashed #00FFFF;
+            border-radius: 10px;
+            padding: 40px;
+            text-align: center;
+            margin-bottom: 30px;
+            background: linear-gradient(145deg, #001111, #000000);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .drop-zone.dragover {
+            border-color: #00FF00;
+            background: linear-gradient(145deg, #002200, #001100);
+            transform: scale(1.02);
+        }
+
+        .drop-zone h3 {
+            color: #00FFFF;
+            margin-bottom: 10px;
+            font-size: 1.3em;
+        }
+
+        .drop-zone p {
+            color: #888888;
+            margin-bottom: 20px;
+        }
+
+        button {
+            background: linear-gradient(145deg, #00FF00, #00CCCC);
+            color: #000000;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 5px;
+            font-family: 'Orbitron', monospace;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+        }
+
+        button:hover {
+            background: linear-gradient(145deg, #00FFFF, #00FF00);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 255, 255, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .convert-excel-btn {
+            background: linear-gradient(145deg, #00FF00, #00FFFF);
+            color: #000000;
+            border: 2px solid #00FF00;
+            padding: 18px 36px;
+            border-radius: 8px;
+            font-family: 'Orbitron', monospace;
+            font-weight: 900;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            margin: 20px auto;
+            display: block;
+            animation: glow-pulse 2s infinite;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+        }
+
+        @keyframes glow-pulse {
+            0% { 
+                box-shadow: 0 0 20px rgba(0, 255, 0, 0.5), 
+                           0 0 30px rgba(0, 255, 255, 0.3);
+            }
+            50% { 
+                box-shadow: 0 0 40px rgba(0, 255, 0, 0.8), 
+                           0 0 50px rgba(0, 255, 255, 0.6),
+                           0 0 60px rgba(0, 255, 0, 0.4);
+            }
+            100% { 
+                box-shadow: 0 0 20px rgba(0, 255, 0, 0.5), 
+                           0 0 30px rgba(0, 255, 255, 0.3);
+            }
+        }
+
+        .convert-excel-btn:hover {
+            background: linear-gradient(145deg, #00FFFF, #00FF00);
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 0 50px rgba(0, 255, 0, 1), 
+                       0 0 70px rgba(0, 255, 255, 0.8);
+        }
+
+        .convert-excel-btn:active {
+            transform: translateY(0) scale(1);
+        }
+
+        .file-list {
+            background: #111111;
+            border: 1px solid #00FFFF;
+            border-radius: 5px;
+            max-height: 200px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+        }
+
+        .file-item {
+            padding: 10px;
+            border-bottom: 1px solid #333333;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .file-item:last-child {
+            border-bottom: none;
+        }
+
+        .file-name {
+            color: #FFFFFF;
+            font-size: 14px;
+        }
+
+        .remove-file {
+            background: linear-gradient(145deg, #FF0000, #CC0000);
+            color: #FFFFFF;
+            padding: 5px 10px;
+            font-size: 12px;
+        }
+
+        .preview-section {
+            background: linear-gradient(145deg, #111111, #000000);
+            border: 1px solid #00FF00;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.2);
+        }
+
+        .preview-section h3 {
+            color: #00FFFF;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+            text-align: center;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            font-size: 13px; /* Slightly increased from 12px */
+            table-layout: auto; /* Changed from fixed to auto for better content fitting */
+        }
+
+        .data-table th,
+        .data-table td {
+            padding: 10px;
+            text-align: left;
+            border: 1px solid #333333;
+            word-wrap: break-word;
+            max-width: 300px; /* Increased from 150px for better visibility */
+            min-width: 120px; /* Added minimum width */
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Special wider columns for path fields */
+        .data-table th:nth-child(1),
+        .data-table td:nth-child(1),
+        .data-table th:nth-child(2),
+        .data-table td:nth-child(2),
+        .data-table th:nth-child(3),
+        .data-table td:nth-child(3) {
+            max-width: 400px; /* Even wider for path columns */
+            min-width: 200px;
+        }
+
+        .data-table th {
+            background: linear-gradient(145deg, #002200, #001100);
+            color: #00FFFF;
+            font-weight: 700;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .data-table tbody tr:hover {
+            background: rgba(0, 255, 0, 0.1);
+        }
+
+        .data-table tbody tr:nth-child(even) {
+            background: rgba(0, 255, 0, 0.05);
+        }
+
+        .data-table input[type="text"] {
+            width: 100%;
+            padding: 5px;
+            background: #000000;
+            border: 1px solid #00FFFF;
+            color: #FFFFFF;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+        }
+
+        .data-table input[type="text"]:focus {
+            outline: none;
+            border-color: #00FF00;
+            box-shadow: 0 0 5px rgba(0, 255, 0, 0.3);
+        }
+
+        /* Scrollable wrapper for large tables */
+        .table-wrapper {
+            overflow-x: auto;
+            max-width: 100%;
+            border: 1px solid #00FFFF;
+            border-radius: 5px;
+        }
+
+        /* Scrollbar styling */
+        .table-wrapper::-webkit-scrollbar,
+        .file-list::-webkit-scrollbar {
+            height: 10px;
+            width: 10px;
+            background: #000000;
+        }
+
+        .table-wrapper::-webkit-scrollbar-thumb,
+        .file-list::-webkit-scrollbar-thumb {
+            background: linear-gradient(145deg, #00FF00, #00CCCC);
+            border-radius: 5px;
+        }
+
+        .table-wrapper::-webkit-scrollbar-track,
+        .file-list::-webkit-scrollbar-track {
+            background: #111111;
+            border-radius: 5px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .progress-container {
+            background: #111111;
+            border: 1px solid #00FFFF;
+            border-radius: 20px;
+            height: 30px;
+            margin: 20px 0;
+            overflow: hidden;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, #00FF00, #00FFFF);
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s ease;
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .success-message {
+            background: linear-gradient(145deg, #002200, #001100);
+            border: 1px solid #00FF00;
+            color: #00FF00;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+            text-align: center;
+            animation: fadeIn 0.5s;
+        }
+
+        .error-message {
+            background: linear-gradient(145deg, #220000, #110000);
+            border: 1px solid #FF0000;
+            color: #FF6666;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+            text-align: center;
+            animation: fadeIn 0.5s;
+        }
+
+        .episode-check {
+            display: inline-block;
+            padding: 3px 8px;
+            margin-left: 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .episode-match {
+            background: linear-gradient(145deg, #00FF00, #00CC00);
+            color: #000000;
+            text-shadow: 0 1px 1px rgba(255, 255, 255, 0.3);
+        }
+
+        .episode-mismatch {
+            background: linear-gradient(145deg, #FF0000, #CC0000);
+            color: #FFFFFF;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+            animation: pulse-red 1s infinite;
+        }
+
+        @keyframes pulse-red {
+            0% { box-shadow: 0 0 5px #FF0000; }
+            50% { box-shadow: 0 0 15px #FF0000, 0 0 20px #FF6666; }
+            100% { box-shadow: 0 0 5px #FF0000; }
+        }
+
+        .episode-info {
+            color: #00FFFF;
+            font-size: 11px;
+            margin-top: 4px;
+            padding: 2px 4px;
+            background: rgba(0, 255, 255, 0.1);
+            border-left: 2px solid #00FFFF;
+            border-radius: 2px;
+        }
+
+        .pad-path-cell {
+            position: relative;
+        }
+
+        .data-row {
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .data-row:hover {
+            background: rgba(0, 255, 255, 0.1) !important;
+        }
+
+        .data-row.selected {
+            background: rgba(0, 255, 0, 0.2) !important;
+            box-shadow: inset 0 0 20px rgba(0, 255, 0, 0.3);
+            position: relative;
+        }
+
+        .data-row.selected::before {
+            content: '▶';
+            position: absolute;
+            left: 5px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #00FF00;
+            font-size: 16px;
+            animation: pulse 1s infinite;
+        }
+
+        .data-table tbody tr td:first-child,
+        .data-table thead tr th:first-child {
+            padding-left: 25px;
+        }
+
+        .details-panel {
+            background: linear-gradient(145deg, #001111, #000000);
+            border: 2px solid #00FFFF;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.3);
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .details-header {
+            color: #00FFFF;
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #00FF00;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .details-close {
+            cursor: pointer;
+            color: #FF6666;
+            font-size: 24px;
+            transition: color 0.2s;
+        }
+
+        .details-close:hover {
+            color: #FF0000;
+        }
+
+        .details-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 15px;
+        }
+
+        .detail-group {
+            background: rgba(0, 255, 0, 0.05);
+            border: 1px solid #00FF00;
+            border-radius: 5px;
+            padding: 15px;
+        }
+
+        .detail-group-title {
+            color: #00FF00;
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .detail-item {
+            display: flex;
+            margin-bottom: 8px;
+            align-items: flex-start;
+        }
+
+        .detail-label {
+            color: #00FFFF;
+            min-width: 120px;
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .detail-value {
+            color: #FFFFFF;
+            font-size: 13px;
+            word-break: break-word;
+            flex: 1;
+        }
+
+        .detail-value.empty {
+            color: #666666;
+            font-style: italic;
+        }
+
+        .row-number-badge {
+            background: linear-gradient(145deg, #00FF00, #00CCCC);
+            color: #000000;
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .bulk-paste-section {
+            background: linear-gradient(145deg, #111111, #000000);
+            border: 1px solid #00FFFF;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.2);
+        }
+
+        .bulk-paste-section h3 {
+            color: #00FFFF;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+
+        .bulk-paste-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); /* Increased from 300px */
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 150px;
+            background: #000000;
+            border: 1px solid #00FFFF;
+            color: #FFFFFF;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px; /* Slightly increased */
+            resize: vertical;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #00FF00;
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+        }
+
+        /* Responsive adjustments for very large screens */
+        @media (min-width: 1920px) {
+            .container {
+                max-width: 1800px;
+            }
+            
+            .data-table th,
+            .data-table td {
+                max-width: 400px;
+            }
+            
+            .data-table th:nth-child(1),
+            .data-table td:nth-child(1),
+            .data-table th:nth-child(2),
+            .data-table td:nth-child(2),
+            .data-table th:nth-child(3),
+            .data-table td:nth-child(3) {
+                max-width: 500px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">M6</div>
+            <h1>M6 XML to BATCH Packliv XLSX</h1>
+            <h4>Batch XML Processor</h4>
+            <p class="subtitle">Convert M6 XML files to Batch PackLiv Excel format</p>
+        </div>
+
+        <div class="settings-panel">
+            <h3 style="color: #00FFFF; margin-bottom: 15px;">Default Settings</h3>
+            <div class="settings-row">
+                <div class="form-group">
+                    <label for="defaultAudioPreset">Audio Preset:</label>
+                    <select id="defaultAudioPreset">
+                        <option value="VF FRA">VF FRA</option>
+                        <option value="VO FRA">VO FRA</option>
+                        <option value="VF FRA + VO">VF FRA + VO</option>
+                        <option value="VF FRA + ADE">VF FRA + ADE</option>
+                        <option value="VO FRA + ADE">VO FRA + ADE</option>
+                        <option value="VF FRA + VO + ADE">VF FRA + VO + ADE</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="defaultLanguageVo">Language VO:</label>
+                    <input type="text" id="defaultLanguageVo" value="" placeholder="e.g., FRA" />
+                </div>
+                <div class="form-group">
+                    <label for="defaultXmlNeeded">XML Needed:</label>
+                    <select id="defaultXmlNeeded">
+                        <option value="true">true</option>
+                        <option value="false">false</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="defaultFilmFormat">Film Format:</label>
+                    <select id="defaultFilmFormat">
+                        <option value="1,33">1,33</option>
+                        <option value="1,55">1,55</option>
+                        <option value="1,66">1,66</option>
+                        <option value="1,77" selected>1,77</option>
+                        <option value="1,85">1,85</option>
+                        <option value="2,00">2,00</option>
+                        <option value="2,35">2,35</option>
+                        <option value="2,40">2,40</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="defaultRevisionId">Revision ID:</label>
+                    <input type="text" id="defaultRevisionId" value="1" />
+                </div>
+            </div>
+        </div>
+
+        <div class="drop-zone" id="dropZone">
+            <h3>📁 Drop XML Files Here</h3>
+            <p>or click to select files</p>
+            <input type="file" id="fileInput" multiple accept=".xml" style="display: none;">
+            <button onclick="document.getElementById('fileInput').click()">Select Files</button>
+        </div>
+
+        <div id="fileListContainer" class="hidden">
+            <h3 style="color: #00FFFF; margin-bottom: 10px;">Selected Files:</h3>
+            <div id="fileList" class="file-list"></div>
+            <div class="action-buttons">
+                <button onclick="parseAllFiles()">Parse All Files</button>
+                <button onclick="clearFiles()">Clear Files</button>
+            </div>
+        </div>
+
+        <div id="messages"></div>
+
+        <div id="progressContainer" class="progress-container hidden">
+            <div id="progressFill" class="progress-fill"></div>
+        </div>
+
+        <div id="previewSection" class="preview-section hidden">
+            <h3>📊 Parsed Data Preview</h3>
+            <p style="text-align: center; color: #888888; font-size: 12px; margin: 5px 0;">💡 Click on any row to view detailed information</p>
+            <div id="validationSummary" style="padding: 10px; margin: 10px 0; background: linear-gradient(145deg, #001100, #000000); border: 1px solid #00FFFF; border-radius: 5px; text-align: center;"></div>
+            <div id="detailsPanel" class="details-panel hidden">
+                <div class="details-header">
+                    <span id="detailsTitle">Row Details</span>
+                    <span class="details-close" onclick="closeDetailsPanel()">×</span>
+                </div>
+                <div id="detailsContent"></div>
+            </div>
+            <div class="action-buttons">
+                <button onclick="clearParsedData()">Clear Data</button>
+                <button onclick="toggleBulkPaste()">Bulk Paste Paths</button>
+            </div>
+            <div id="bulkPasteSection" class="bulk-paste-section hidden">
+                <h3>Bulk Paste File Paths</h3>
+                <div class="bulk-paste-grid">
+                    <div class="form-group">
+                        <label for="bulkPadPaths">PAD Paths (one per line):</label>
+                        <textarea id="bulkPadPaths" placeholder="Paste PAD file paths here..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="bulkSubVmPaths">Subtitle VM Paths (one per line):</label>
+                        <textarea id="bulkSubVmPaths" placeholder="Paste Subtitle VM paths here..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="bulkSubSmePaths">Subtitle SME Paths (one per line):</label>
+                        <textarea id="bulkSubSmePaths" placeholder="Paste Subtitle SME paths here..."></textarea>
+                    </div>
+                </div>
+                <div class="action-buttons">
+                    <button onclick="applyBulkPaths()">Apply Paths</button>
+                    <button onclick="clearBulkPaths()">Clear All</button>
+                    <button onclick="document.getElementById('bulkPasteSection').classList.add('hidden')">Cancel</button>
+                </div>
+            </div>
+            <div class="table-wrapper">
+                <table id="dataTable" class="data-table"></table>
+            </div>
+            <div style="border-top: 2px solid #00FFFF; margin: 30px 0; box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);"></div>
+            <button class="convert-excel-btn" onclick="convertToExcel()">🚀 Convert to Excel</button>
+            <p style="text-align: center; color: #888888; margin-top: 10px; font-size: 12px;">Generate XLSX file with BATCH, HELP, and JOB_DESCRIPTOR sheets</p>
+            <details style="margin: 20px auto; max-width: 800px; color: #888888; font-size: 11px;">
+                <summary style="cursor: pointer; color: #00FFFF; font-size: 12px;">📌 Supported Episode Formats (click to expand)</summary>
+                <div style="padding: 10px; background: rgba(0, 255, 255, 0.05); border-left: 2px solid #00FFFF; margin-top: 10px;">
+                    <p><strong>Recognized patterns in PAD paths:</strong></p>
+                    <ul style="list-style: none; padding-left: 10px;">
+                        <li>• OuiOui-S01-E101_*.MXF → Detects E101 (Season 1, Episode 1)</li>
+                        <li>• OUIOUI_EP_234_*.MXF → Detects EP_234 (Season 2, Episode 34)</li>
+                        <li>• *_EP_127_*.MXF → Detects EP_127 (Season 1, Episode 27)</li>
+                        <li>• *-E101_*.MXF or *E101.MXF → Detects E101</li>
+                        <li>• 3-digit episodes (101-399) → Auto-interprets as Season+Episode</li>
+                    </ul>
+                    <p style="margin-top: 10px;"><strong>Title Normalization:</strong></p>
+                    <ul style="list-style: none; padding-left: 10px;">
+                        <li>• "Oui-Oui enquêtes aux pays des jouets" → "OuiOui enquetes aux pays des jouets"</li>
+                        <li>• "L'affaire des règles du jeu" → "L affaire des regles du jeu"</li>
+                        <li>• "Épisode 27" → "Episode 27"</li>
+                        <li>• "L'expérience sabotée" → "L experience sabotee"</li>
+                        <li>• "Les bêtises au Pays" → "Les betises au Pays"</li>
+                        <li>• All French accents converted: é→e, è→e, ê→e, à→a, ç→c, ï→i, œ→oe</li>
+                    </ul>
+                </div>
+            </details>
+        </div>
+    </div>
+
+    <script>
+        let selectedFiles = [];
+        let parsedData = [];
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            setupEventListeners();
+            
+            // Add keyboard navigation
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    closeDetailsPanel();
+                } else if (selectedRowIndex !== null) {
+                    if (e.key === 'ArrowUp' && selectedRowIndex > 0) {
+                        e.preventDefault();
+                        showRowDetails(selectedRowIndex - 1);
+                    } else if (e.key === 'ArrowDown' && selectedRowIndex < parsedData.length - 1) {
+                        e.preventDefault();
+                        showRowDetails(selectedRowIndex + 1);
+                    }
+                }
+            });
+        });
+
+        function setupEventListeners() {
+            const dropZone = document.getElementById('dropZone');
+            const fileInput = document.getElementById('fileInput');
+            
+            // Drag and drop events
+            dropZone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                dropZone.classList.add('dragover');
+            });
+            
+            dropZone.addEventListener('dragleave', () => {
+                dropZone.classList.remove('dragover');
+            });
+            
+            dropZone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                dropZone.classList.remove('dragover');
+                handleFiles(e.dataTransfer.files);
+            });
+            
+            // File input change
+            fileInput.addEventListener('change', (e) => {
+                handleFiles(e.target.files);
+            });
+        }
+
+        function handleFiles(files) {
+            const xmlFiles = Array.from(files).filter(file => 
+                file.type === 'text/xml' || file.name.endsWith('.xml')
+            );
+            
+            if (xmlFiles.length === 0) {
+                showMessage('Please select XML files only.', 'error');
+                return;
+            }
+            
+            selectedFiles = xmlFiles;
+            displayFileList();
+        }
+
+        function displayFileList() {
+            const fileListContainer = document.getElementById('fileListContainer');
+            const fileList = document.getElementById('fileList');
+            
+            if (selectedFiles.length === 0) {
+                fileListContainer.classList.add('hidden');
+                return;
+            }
+            
+            fileListContainer.classList.remove('hidden');
+            fileList.innerHTML = '';
+            
+            selectedFiles.forEach((file, index) => {
+                const fileItem = document.createElement('div');
+                fileItem.className = 'file-item';
+                fileItem.innerHTML = `
+                    <span class="file-name">${file.name}</span>
+                    <button class="remove-file" onclick="removeFile(${index})">Remove</button>
+                `;
+                fileList.appendChild(fileItem);
+            });
+        }
+
+        function removeFile(index) {
+            selectedFiles.splice(index, 1);
+            displayFileList();
+            if (selectedFiles.length === 0) {
+                clearParsedData();
+            }
+        }
+
+        function clearFiles() {
+            selectedFiles = [];
+            displayFileList();
+            clearParsedData();
+            clearMessages();
+        }
+
+        function clearParsedData() {
+            parsedData = [];
+            document.getElementById('previewSection').classList.add('hidden');
+            document.getElementById('dataTable').innerHTML = '';
+            closeDetailsPanel();
+        }
+
+        /**
+         * Title Normalization Function
+         * Handles French accented characters and special formatting:
+         * - É → E, è → e, ê → e, etc. (all accented characters)
+         * - "Oui-Oui" → "OuiOui" (removes hyphen)
+         * - "enquêtes" → "enquetes"
+         * - "Épisode" → "Episode"
+         * - Removes special characters while preserving spaces
+         */
+        function normalizeTitle(title) {
+            if (!title) return '';
+            
+            // First, normalize accented characters to their non-accented equivalents
+            const accentsMap = {
+                'à': 'a', 'á': 'a', 'â': 'a', 'ã': 'a', 'ä': 'a', 'å': 'a', 'ā': 'a', 'ă': 'a', 'ą': 'a',
+                'À': 'A', 'Á': 'A', 'Â': 'A', 'Ã': 'A', 'Ä': 'A', 'Å': 'A', 'Ā': 'A', 'Ă': 'A', 'Ą': 'A',
+                'è': 'e', 'é': 'e', 'ê': 'e', 'ë': 'e', 'ē': 'e', 'ĕ': 'e', 'ė': 'e', 'ę': 'e', 'ě': 'e',
+                'È': 'E', 'É': 'E', 'Ê': 'E', 'Ë': 'E', 'Ē': 'E', 'Ĕ': 'E', 'Ė': 'E', 'Ę': 'E', 'Ě': 'E',
+                'ì': 'i', 'í': 'i', 'î': 'i', 'ï': 'i', 'ī': 'i', 'ĭ': 'i', 'į': 'i', 'ı': 'i',
+                'Ì': 'I', 'Í': 'I', 'Î': 'I', 'Ï': 'I', 'Ī': 'I', 'Ĭ': 'I', 'Į': 'I', 'İ': 'I',
+                'ò': 'o', 'ó': 'o', 'ô': 'o', 'õ': 'o', 'ö': 'o', 'ō': 'o', 'ŏ': 'o', 'ő': 'o',
+                'Ò': 'O', 'Ó': 'O', 'Ô': 'O', 'Õ': 'O', 'Ö': 'O', 'Ō': 'O', 'Ŏ': 'O', 'Ő': 'O',
+                'ù': 'u', 'ú': 'u', 'û': 'u', 'ü': 'u', 'ū': 'u', 'ŭ': 'u', 'ů': 'u', 'ű': 'u', 'ų': 'u',
+                'Ù': 'U', 'Ú': 'U', 'Û': 'U', 'Ü': 'U', 'Ū': 'U', 'Ŭ': 'U', 'Ů': 'U', 'Ű': 'U', 'Ų': 'U',
+                'ñ': 'n', 'ń': 'n', 'ņ': 'n', 'ň': 'n', 'ŉ': 'n',
+                'Ñ': 'N', 'Ń': 'N', 'Ņ': 'N', 'Ň': 'N',
+                'ç': 'c', 'ć': 'c', 'ĉ': 'c', 'ċ': 'c', 'č': 'c',
+                'Ç': 'C', 'Ć': 'C', 'Ĉ': 'C', 'Ċ': 'C', 'Č': 'C',
+                'ÿ': 'y', 'ý': 'y', 'ŷ': 'y',
+                'Ÿ': 'Y', 'Ý': 'Y', 'Ŷ': 'Y',
+                'œ': 'oe', 'Œ': 'OE',
+                'æ': 'ae', 'Æ': 'AE',
+                'ß': 'ss',
+                'ł': 'l', 'Ł': 'L',
+                'ž': 'z', 'Ž': 'Z', 'ź': 'z', 'Ź': 'Z', 'ż': 'z', 'Ż': 'Z',
+                'š': 's', 'Š': 'S', 'ś': 's', 'Ś': 'S',
+                'đ': 'd', 'Đ': 'D',
+                'þ': 'th', 'Þ': 'TH',
+                'ø': 'o', 'Ø': 'O'
+            };
+            
+            // Replace accented characters
+            let normalizedTitle = title.split('').map(char => accentsMap[char] || char).join('');
+            
+            // Normalize "Oui-Oui" to "OuiOui" (remove hyphen)
+            normalizedTitle = normalizedTitle.replace(/Oui-Oui/gi, 'OuiOui');
+            
+            // Replace apostrophes with space (for French titles like "L'affaire")
+            normalizedTitle = normalizedTitle.replace(/[''´`]/g, ' ');
+            
+            // Remove other special characters but keep spaces, letters, and numbers
+            // \w includes a-z, A-Z, 0-9 and underscore
+            normalizedTitle = normalizedTitle.replace(/[^a-zA-Z0-9\s]/g, ' ');
+            
+            // Replace multiple spaces with single space
+            normalizedTitle = normalizedTitle.replace(/\s+/g, ' ');
+            
+            // Trim and return
+            const result = normalizedTitle.trim();
+            
+            // Debug title normalization to check UTF-8 encoding
+            console.log('Title normalization:', title, '→', result);
+            
+            return result;
+        }
+
+        async function parseAllFiles() {
+            if (selectedFiles.length === 0) {
+                showMessage('No files selected. Please select XML files first.', 'error');
+                return;
+            }
+            
+            parsedData = [];
+            showProgress(true);
+            
+            const totalFiles = selectedFiles.length;
+            let processedFiles = 0;
+            
+            for (const file of selectedFiles) {
+                try {
+                    const xmlText = await readFileAsText(file);
+                    const results = parseXmlFile(xmlText, file.name);
+                    if (results && results.length > 0) {
+                        // Add all results (could be multiple entries from one file)
+                        parsedData.push(...results);
+                    }
+                    processedFiles++;
+                    updateProgress((processedFiles / totalFiles) * 100);
+                } catch (error) {
+                    console.error(`Error processing ${file.name}:`, error);
+                    showMessage(`Error processing ${file.name}: ${error.message}`, 'error');
+                }
+            }
+            
+            showProgress(false);
+            
+            if (parsedData.length > 0) {
+                displayParsedData();
+                showMessage(`Successfully parsed ${parsedData.length} entries from ${processedFiles} files.`, 'success');
+            } else {
+                showMessage('No valid data was parsed from the XML files.', 'error');
+            }
+        }
+
+        function readFileAsText(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const arrayBuffer = e.target.result;
+                    
+                    // Try UTF-8 first
+                    let text = new TextDecoder('utf-8', { fatal: false }).decode(arrayBuffer);
+                    
+                    // If we see replacement characters (�), the file is likely not UTF-8
+                    // Try Windows-1252 (common for French content from Windows systems)
+                    if (text.includes('�')) {
+                        console.log('UTF-8 decode found replacement characters, trying Windows-1252...');
+                        try {
+                            text = new TextDecoder('windows-1252').decode(arrayBuffer);
+                        } catch (e) {
+                            // If Windows-1252 fails, try ISO-8859-1 (Latin-1)
+                            console.log('Windows-1252 failed, trying ISO-8859-1...');
+                            text = new TextDecoder('iso-8859-1').decode(arrayBuffer);
+                        }
+                    }
+                    
+                    resolve(text);
+                };
+                reader.onerror = reject;
+                reader.readAsArrayBuffer(file);
+            });
+        }
+
+        function parseXmlFile(xmlText, fileName) {
+            try {
+                const parser = new DOMParser();
+                // Parse as text/xml to preserve UTF-8 characters
+                const xmlDoc = parser.parseFromString(xmlText, "text/xml");
+                
+                // Check for parsing errors
+                const parserError = xmlDoc.querySelector('parsererror');
+                if (parserError) {
+                    throw new Error('Invalid XML format');
+                }
+                
+                // Check if this is a MediaDeliveries XML (multiple entries)
+                const mediaDeliveries = xmlDoc.getElementsByTagName('MediaDelivery');
+                if (mediaDeliveries.length > 0) {
+                    // Handle TransPerfect MediaDeliveries format
+                    const results = [];
+                    for (let i = 0; i < mediaDeliveries.length; i++) {
+                        const delivery = mediaDeliveries[i];
+                        
+                        // Helper function to safely get text content from a specific element
+                        // IMPORTANT: Get textContent directly without modification to preserve UTF-8
+                        const getDeliveryText = (tagName) => {
+                            const element = delivery.getElementsByTagName(tagName)[0];
+                            if (!element) return '';
+                            // Use textContent to preserve all Unicode characters
+                            return element.textContent ? element.textContent.trim() : '';
+                        };
+                        
+                        const data = {
+                            fileName: `${fileName}_${i + 1}`,
+                            padPath: '',
+                            subtitleVmPath: '',
+                            subtitleSmePath: '',
+                            titlePgmLocal: normalizeTitle(getDeliveryText('ProgramSerie')),
+                            m6Id: getDeliveryText('BroadcasterPrivateID'),
+                            xmlNeeded: document.getElementById('defaultXmlNeeded').value,
+                            revisionId: document.getElementById('defaultRevisionId').value, // Use default from settings
+                            titleEpLocal: normalizeTitle(getDeliveryText('ProgramTitle')),
+                            titlePgmVo: normalizeTitle(getDeliveryText('ProgramSerie')), // Same as local for now
+                            titleEpVo: normalizeTitle(getDeliveryText('ProgramTitle')), // Same as local for now
+                            filmFormat: document.getElementById('defaultFilmFormat').value,
+                            audioPreset: document.getElementById('defaultAudioPreset').value,
+                            languageVo: document.getElementById('defaultLanguageVo').value
+                        };
+                        
+                        // Add episode number to the episode title if available
+                        const episodeNum = getDeliveryText('ProgramEpisode');
+                        if (episodeNum) {
+                            // Don't add episode number if it's already in the title
+                            const existingEpisode = getEpisodeFromTitle(data.titleEpLocal);
+                            if (!existingEpisode || existingEpisode !== episodeNum) {
+                                data.titleEpLocal = `Episode ${episodeNum} ${data.titleEpLocal}`;
+                                data.titleEpVo = `Episode ${episodeNum} ${data.titleEpVo}`;
+                            }
+                        }
+                        
+                        results.push(data);
+                    }
+                    return results; // Return array of results
+                } else {
+                    // Handle standard single-entry XML format
+                    const data = {
+                        fileName: fileName,
+                        padPath: '',
+                        subtitleVmPath: '',
+                        subtitleSmePath: '',
+                        titlePgmLocal: '',
+                        m6Id: '',
+                        xmlNeeded: document.getElementById('defaultXmlNeeded').value,
+                        revisionId: document.getElementById('defaultRevisionId').value,
+                        titleEpLocal: '',
+                        titlePgmVo: '',
+                        titleEpVo: '',
+                        filmFormat: document.getElementById('defaultFilmFormat').value,
+                        audioPreset: document.getElementById('defaultAudioPreset').value,
+                        languageVo: document.getElementById('defaultLanguageVo').value
+                    };
+                    
+                    // Helper function to safely get text content
+                    const getElementText = (tagName) => {
+                        const element = xmlDoc.getElementsByTagName(tagName)[0];
+                        return element ? element.textContent.trim() : '';
+                    };
+                    
+                    // Extract M6 ID
+                    data.m6Id = getElementText('m6_id') || getElementText('M6_ID') || getElementText('id') || getElementText('BroadcasterPrivateID');
+                    
+                    // Extract titles and normalize them
+                    data.titlePgmLocal = normalizeTitle(getElementText('title_pgm_local') || getElementText('program_title') || getElementText('ProgramSerie'));
+                    data.titleEpLocal = normalizeTitle(getElementText('title_ep_local') || getElementText('episode_title') || getElementText('ProgramTitle'));
+                    data.titlePgmVo = normalizeTitle(getElementText('title_pgm_vo') || getElementText('program_title_vo') || data.titlePgmLocal);
+                    data.titleEpVo = normalizeTitle(getElementText('title_ep_vo') || getElementText('episode_title_vo') || data.titleEpLocal);
+                    
+                    // Extract other fields
+                    data.revisionId = getElementText('revision_id') || getElementText('revision') || document.getElementById('defaultRevisionId').value; // Use default from settings
+                    data.filmFormat = getElementText('film_format') || getElementText('format') || document.getElementById('defaultFilmFormat').value;
+                    
+                    return [data]; // Return as array for consistency
+                }
+                
+            } catch (error) {
+                console.error(`Error parsing XML for ${fileName}:`, error);
+                return null;
+            }
+        }
+
+        function displayParsedData() {
+            const previewSection = document.getElementById('previewSection');
+            previewSection.classList.remove('hidden');
+            updateDataTable();
+        }
+
+        /**
+         * Episode Extraction Functions
+         * Supported PAD path formats:
+         * - OuiOui-S01-E101_*.MXF         → Extracts E101 (S01E01 if 3-digit)
+         * - OUIOUI_EP_234_*.MXF           → Extracts EP_234 (S2E34 if 3-digit)
+         * - *_EP_127_*.MXF                → Extracts EP_127 (S1E27 if 3-digit)
+         * - *-E101_*.MXF or *E101_*.MXF   → Extracts E101 (S1E01 if 3-digit)
+         * - Episode detection handles 3-digit numbers as Season+Episode
+         *   (e.g., 101 = S1E01, 234 = S2E34, 339 = S3E39)
+         */
+        function extractEpisodeFromPath(path) {
+            if (!path) return null;
+            
+            // Look for pattern EP_XXX or similar variations
+            // Priority order: more specific patterns first
+            const patterns = [
+                /S\d{1,2}-E(\d+)/i,    // S01-E101 or S1-E27 (Season-Episode format)
+                /-E(\d+)[_\.\s]/i,     // -E101_ or -E101. or -E101 space
+                /[^A-Z]E(\d+)[_\.\s]/i, // E101_ or E101. (not preceded by letter to avoid matching words)
+                /EP_(\d+)/i,           // EP_234
+                /EPISODE_(\d+)/i,      // EPISODE_234
+                /EP(\d+)(?:[_\.\s]|$)/i, // EP234 followed by separator or end
+                /_EP_(\d+)_/i,         // _EP_234_
+                /OUIOUI_EP_(\d+)/i,    // OUIOUI_EP_234
+                /_(\d{2,3})_/,         // _234_ (between underscores, fallback)
+            ];
+            
+            for (const pattern of patterns) {
+                const match = path.match(pattern);
+                if (match) {
+                    const fullNumber = match[1];
+                    // If it's a 3-digit number starting with 1, 2, or 3, it might be season+episode
+                    if (fullNumber.length === 3 && fullNumber[0].match(/[123]/)) {
+                        // Return just the episode part (last 2 digits)
+                        const episode = parseInt(fullNumber.slice(1), 10).toString();
+                        // Don't treat as season+episode if episode would be 0
+                        if (episode === '0') {
+                            return parseInt(fullNumber, 10).toString();
+                        }
+                        return episode;
+                    }
+                    // Otherwise, remove leading zeros and return
+                    return parseInt(fullNumber, 10).toString();
+                }
+            }
+            return null;
+        }
+
+        function getSeasonFromPath(path) {
+            if (!path) return null;
+            
+            // Look for explicit season indicators
+            const patterns = [
+                /S(\d{1,2})-E\d+/i,     // S01-E101 or S1-E27
+                /Season[\s_]?(\d+)/i,   // Season 1 or Season_1
+                /S(\d{1,2})[_\-\s]/i,   // S1_ or S01- or S1 space
+                /[\s_]S(\d{1,2})[\s_]/i, // _S1_ or space S1 space
+            ];
+            
+            for (const pattern of patterns) {
+                const match = path.match(pattern);
+                if (match) {
+                    return parseInt(match[1], 10).toString();
+                }
+            }
+            return null;
+        }
+
+        function getEpisodeFromTitle(titleEp) {
+            if (!titleEp) return null;
+            
+            // Try to extract from both original and normalized versions
+            const originalTitle = titleEp;
+            const normalizedTitle = normalizeTitle(titleEp);
+            
+            // Extract episode number from title
+            const patterns = [
+                /Episode\s+(\d+)/i,    // Episode 27 (after normalization)
+                /Épisode\s+(\d+)/i,    // Épisode 27 (original French)
+                /Episodio\s+(\d+)/i,   // Episodio 27 (Spanish/Italian)
+                /EP\s+(\d+)/i,         // EP 27
+                /\b(\d{2,3})\b/        // Just the number (2 or 3 digits)
+            ];
+            
+            // Try patterns on both original and normalized text
+            for (const text of [originalTitle, normalizedTitle]) {
+                for (const pattern of patterns) {
+                    const match = text.match(pattern);
+                    if (match) {
+                        // Remove leading zeros
+                        return parseInt(match[1], 10).toString();
+                    }
+                }
+            }
+            return null;
+        }
+
+        function getFullEpisodeNumber(path) {
+            // Get the full episode number for display
+            if (!path) return null;
+            
+            const patterns = [
+                { regex: /S(\d{1,2})-E(\d+)/i, prefix: 'E', seasonGroup: 1, episodeGroup: 2 },  // S01-E101 or S1-E27
+                { regex: /-E(\d+)[_\.\s]/i, prefix: 'E', episodeGroup: 1 },      // -E101_ or -E101.
+                { regex: /[^A-Z]E(\d+)[_\.\s]/i, prefix: 'E', episodeGroup: 1 }, // E101_ (not preceded by letter)
+                { regex: /EP_(\d+)/i, prefix: 'EP_', episodeGroup: 1 },          // EP_234
+                { regex: /EPISODE_(\d+)/i, prefix: 'EP_', episodeGroup: 1 },     // EPISODE_234
+                { regex: /EP(\d+)(?:[_\.\s]|$)/i, prefix: 'EP', episodeGroup: 1 }, // EP234
+                { regex: /_EP_(\d+)_/i, prefix: 'EP_', episodeGroup: 1 },        // _EP_234_
+                { regex: /OUIOUI_EP_(\d+)/i, prefix: 'EP_', episodeGroup: 1 },   // OUIOUI_EP_234
+                { regex: /_(\d{2,3})_/, prefix: 'EP_', episodeGroup: 1 },        // _234_ fallback
+            ];
+            
+            for (const pattern of patterns) {
+                const match = path.match(pattern.regex);
+                if (match) {
+                    const episodeNumber = match[pattern.episodeGroup];
+                    const season = pattern.seasonGroup ? match[pattern.seasonGroup] : null;
+                    return { 
+                        number: episodeNumber, 
+                        prefix: pattern.prefix,
+                        season: season
+                    };
+                }
+            }
+            return null;
+        }
+
+        function updateDataTable() {
+            const table = document.getElementById('dataTable');
+            
+            // Create header
+            const headerHtml = `
+                <thead>
+                    <tr>
+                        <th>PAD Path</th>
+                        <th>Subtitle VM Path</th>
+                        <th>Subtitle SME Path</th>
+                        <th>Title PGM Local</th>
+                        <th>M6 ID</th>
+                        <th>XML Needed</th>
+                        <th>Revision ID</th>
+                        <th>Title EP Local</th>
+                        <th>Title PGM VO</th>
+                        <th>Title EP VO</th>
+                        <th>Film Format</th>
+                        <th>Audio Preset</th>
+                        <th>Language VO</th>
+                    </tr>
+                </thead>
+            `;
+            
+            // Create body with editable fields
+            const bodyRows = parsedData.map((row, index) => {
+                // Extract episode numbers for comparison
+                const padEpisode = extractEpisodeFromPath(row.padPath);
+                const episodeInfo = getFullEpisodeNumber(row.padPath);
+                const titleEpisode = getEpisodeFromTitle(row.titleEpLocal);
+                const explicitSeason = getSeasonFromPath(row.padPath);
+                
+                // Determine if episodes match
+                let episodeIndicator = '';
+                let episodeInfoDisplay = '';
+                
+                if (padEpisode && episodeInfo) {
+                    const fullEpisodeNumber = episodeInfo.number;
+                    const episodePrefix = episodeInfo.prefix;
+                    const isMatch = titleEpisode && padEpisode === titleEpisode;
+                    const className = isMatch ? 'episode-match' : 'episode-mismatch';
+                    const status = isMatch ? '✓' : '⚠️';
+                    
+                    // Build display label
+                    let displayLabel = `${episodePrefix}${fullEpisodeNumber}`;
+                    if (episodeInfo.season) {
+                        displayLabel = `S${episodeInfo.season.padStart(2, '0')}-${episodePrefix}${fullEpisodeNumber}`;
+                    }
+                    
+                    episodeIndicator = `<span class="episode-check ${className}">${displayLabel} ${status}</span>`;
+                    
+                    if (isMatch) {
+                        // Check if it's a season+episode format
+                        if (fullEpisodeNumber.length === 3 && fullEpisodeNumber !== padEpisode && !explicitSeason) {
+                            const impliedSeason = fullEpisodeNumber[0];
+                            episodeInfoDisplay = `<div class="episode-info">✓ Path ${episodePrefix}${fullEpisodeNumber} (S${impliedSeason}E${padEpisode.padStart(2, '0')}) matches Title EP${titleEpisode}</div>`;
+                        } else if (explicitSeason || episodeInfo.season) {
+                            const seasonStr = explicitSeason || episodeInfo.season;
+                            episodeInfoDisplay = `<div class="episode-info">✓ Path S${seasonStr.padStart(2, '0')}-${episodePrefix}${fullEpisodeNumber} matches Title EP${titleEpisode}</div>`;
+                        } else {
+                            episodeInfoDisplay = `<div class="episode-info">✓ Path ${episodePrefix}${fullEpisodeNumber} matches Title EP${titleEpisode}</div>`;
+                        }
+                    } else {
+                        let pathDisplay = episodePrefix + fullEpisodeNumber;
+                        if (explicitSeason || episodeInfo.season) {
+                            const seasonStr = explicitSeason || episodeInfo.season;
+                            pathDisplay = `S${seasonStr.padStart(2, '0')}-${pathDisplay}`;
+                        }
+                        episodeInfoDisplay = `<div class="episode-info" style="background: rgba(255, 0, 0, 0.1); border-left-color: #FF0000;">⚠️ Path has ${pathDisplay} but Title shows EP${titleEpisode || '???'}</div>`;
+                    }
+                }
+                
+                return `
+                <tr class="data-row" onclick="showRowDetails(${index})" data-index="${index}">
+                    <td class="pad-path-cell">
+                        <input type="text" value="${row.padPath}" onchange="updateData(${index}, 'padPath', this.value)" onclick="event.stopPropagation()" placeholder="Enter PAD path...">
+                        ${episodeIndicator}
+                        ${episodeInfoDisplay}
+                    </td>
+                    <td><input type="text" value="${row.subtitleVmPath}" onchange="updateData(${index}, 'subtitleVmPath', this.value)" onclick="event.stopPropagation()" placeholder="Enter subtitle VM path..."></td>
+                    <td><input type="text" value="${row.subtitleSmePath}" onchange="updateData(${index}, 'subtitleSmePath', this.value)" onclick="event.stopPropagation()" placeholder="Enter subtitle SME path..."></td>
+                    <td><input type="text" value="${row.titlePgmLocal}" onchange="updateData(${index}, 'titlePgmLocal', this.value)" onclick="event.stopPropagation()"></td>
+                    <td><input type="text" value="${row.m6Id}" onchange="updateData(${index}, 'm6Id', this.value)" onclick="event.stopPropagation()"></td>
+                    <td><input type="text" value="${row.xmlNeeded}" onchange="updateData(${index}, 'xmlNeeded', this.value)" onclick="event.stopPropagation()"></td>
+                    <td><input type="text" value="${row.revisionId}" onchange="updateData(${index}, 'revisionId', this.value)" onclick="event.stopPropagation()"></td>
+                    <td><input type="text" value="${row.titleEpLocal}" onchange="updateData(${index}, 'titleEpLocal', this.value)" onclick="event.stopPropagation()"></td>
+                    <td><input type="text" value="${row.titlePgmVo}" onchange="updateData(${index}, 'titlePgmVo', this.value)" onclick="event.stopPropagation()"></td>
+                    <td><input type="text" value="${row.titleEpVo}" onchange="updateData(${index}, 'titleEpVo', this.value)" onclick="event.stopPropagation()"></td>
+                    <td><input type="text" value="${row.filmFormat}" onchange="updateData(${index}, 'filmFormat', this.value)" onclick="event.stopPropagation()"></td>
+                    <td><input type="text" value="${row.audioPreset}" onchange="updateData(${index}, 'audioPreset', this.value)" onclick="event.stopPropagation()"></td>
+                    <td><input type="text" value="${row.languageVo}" onchange="updateData(${index}, 'languageVo', this.value)" onclick="event.stopPropagation()"></td>
+                </tr>
+            `}).join('');
+            
+            table.innerHTML = headerHtml + '<tbody>' + bodyRows + '</tbody>';
+            
+            // Update validation summary
+            updateValidationSummary();
+        }
+
+        function updateValidationSummary() {
+            const summaryDiv = document.getElementById('validationSummary');
+            if (!summaryDiv) return;
+            
+            let totalRows = parsedData.length;
+            let matchedCount = 0;
+            let mismatchedCount = 0;
+            let nopathCount = 0;
+            
+            parsedData.forEach(row => {
+                if (!row.padPath) {
+                    nopathCount++;
+                } else {
+                    const padEpisode = extractEpisodeFromPath(row.padPath);
+                    const titleEpisode = getEpisodeFromTitle(row.titleEpLocal);
+                    if (padEpisode && titleEpisode) {
+                        if (padEpisode === titleEpisode) {
+                            matchedCount++;
+                        } else {
+                            mismatchedCount++;
+                        }
+                    }
+                }
+            });
+            
+            let summaryHTML = `<span style="color: #00FFFF;">Total Entries: ${totalRows}</span>`;
+            
+            if (matchedCount > 0) {
+                summaryHTML += ` | <span style="color: #00FF00;">✓ Matched: ${matchedCount}</span>`;
+            }
+            if (mismatchedCount > 0) {
+                summaryHTML += ` | <span style="color: #FF6666;">⚠️ Mismatched: ${mismatchedCount}</span>`;
+            }
+            if (nopathCount > 0) {
+                summaryHTML += ` | <span style="color: #888888;">No PAD Path: ${nopathCount}</span>`;
+            }
+            
+            summaryDiv.innerHTML = summaryHTML;
+        }
+
+        function updateData(index, field, value) {
+            // Apply title normalization for title fields
+            if (field.includes('title') || field.includes('Title')) {
+                value = normalizeTitle(value);
+            }
+            parsedData[index][field] = value;
+            
+            // Only refresh the entire table if PAD path or title changes (for validation update)
+            if (field === 'padPath' || field === 'titleEpLocal') {
+                updateDataTable();
+            } else {
+                // Still update validation summary for other changes that might affect counts
+                updateValidationSummary();
+            }
+            
+            // Refresh details panel if this row is currently selected
+            if (selectedRowIndex === index) {
+                showRowDetails(index);
+            }
+        }
+
+        function convertToExcel() {
+            if (parsedData.length === 0) {
+                showMessage('No data to convert. Please parse XML files first.', 'error');
+                return;
+            }
+
+            try {
+                showProgress(true);
+                
+                // Create workbook
+                const wb = XLSX.utils.book_new();
+                
+                // BATCH sheet
+                const batchData = parsedData.map(row => ({
+                    'pad_path': row.padPath,
+                    'subtitle_vm_path': row.subtitleVmPath,
+                    'subtitle_sme_path': row.subtitleSmePath,
+                    'title_pgm_local': row.titlePgmLocal,
+                    'm6_id': row.m6Id,
+                    'xml_needed': row.xmlNeeded,
+                    'revision_id': row.revisionId,
+                    'title_ep_local': row.titleEpLocal,
+                    'title_pgm_vo': row.titlePgmVo,
+                    'title_ep_vo': row.titleEpVo,
+                    'film_format': String(row.filmFormat), // Explicitly convert to string to preserve comma
+                    'preset_audio_map': row.audioPreset,
+                    'language_vo': row.languageVo
+                }));
+                
+                const batchWs = XLSX.utils.json_to_sheet(batchData);
+                
+                // Force film_format column (column K, index 10) to be text format to preserve commas
+                const range = XLSX.utils.decode_range(batchWs['!ref']);
+                for (let R = range.s.r; R <= range.e.r; ++R) {
+                    const cellAddress = XLSX.utils.encode_cell({ r: R, c: 10 }); // Column K (film_format)
+                    if (batchWs[cellAddress]) {
+                        batchWs[cellAddress].t = 's'; // Force to string type
+                        batchWs[cellAddress].z = '@'; // Text format
+                        // Ensure value is string with comma
+                        if (batchWs[cellAddress].v) {
+                            batchWs[cellAddress].v = String(batchWs[cellAddress].v).replace('.', ',');
+                        }
+                    }
+                }
+                
+                XLSX.utils.book_append_sheet(wb, batchWs, 'BATCH');
+                
+                // HELP sheet
+                const helpData = createHelpData();
+                const helpWs = XLSX.utils.json_to_sheet(helpData);
+                XLSX.utils.book_append_sheet(wb, helpWs, 'HELP');
+                
+                // JOB_DESCRIPTOR sheet
+                const jobData = [{
+                    'LABEL': 'PackLiv M6',
+                    'ID': 218,
+                    'VERSION': 21,
+                    'VERSION_ID': 5034,
+                    'DESCRIPTOR': 'JSON Descriptor Content'
+                }];
+                const jobWs = XLSX.utils.json_to_sheet(jobData);
+                XLSX.utils.book_append_sheet(wb, jobWs, 'JOB_DESCRIPTOR');
+                
+                // Generate filename
+                const currentDate = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+                const filename = `batch_PackLivM6_ID-218_V-21_LAST_${currentDate}.xlsx`;
+                
+                // Save file
+                XLSX.writeFile(wb, filename);
+                
+                showProgress(false);
+                showMessage(`Successfully converted to Excel! File: ${filename}`, 'success');
+                
+            } catch (error) {
+                showProgress(false);
+                showMessage(`Error converting to Excel: ${error.message}`, 'error');
+            }
+        }
+
+        function createHelpData() {
+            const parameters = [
+                "pad_path", "subtitle_vm_path", "subtitle_sme_path", "title_pgm_local",
+                "m6_id", "xml_needed", "revision_id", "title_ep_local", "title_pgm_vo",
+                "title_ep_vo", "film_format", "preset_audio_map", "language_vo"
+            ];
+
+            const aide = [""] ;
+            const requis = Array(13).fill("NON");
+            const types = ["file", "file", "file", "char", "char", "boolean", "char", 
+                          "char", "char", "char", "select", "select", "char"];
+            const choix = [
+                ...Array(10).fill("NA"),
+                "1,33, 1,55, 1,66, 1,77, 1,85, 2,00, 2,35, 2,40",
+                "VF FRA, VO FRA, VF FRA + VO, VF FRA + ADE, VO FRA + ADE, VF FRA + VO + ADE",
+                "NA"
+            ];
+            const defaut = [...Array(5).fill("NC"), "true", ...Array(7).fill("NC")];
+
+            return parameters.map((param, i) => ({
+                'Parameter': `[Paramètre] : ${param}`,
+                'Aide': `[Aide] : ${aide[i] || ''}`,
+                'Requis': `[Requis] : ${requis[i]}`,
+                'Type': `[Type] : ${types[i]}`,
+                'Choix': `[Choix] : ${choix[i]}`,
+                'Defaut': `[Défaut] : ${defaut[i]}`
+            }));
+        }
+
+        function showProgress(show) {
+            const container = document.getElementById('progressContainer');
+            if (show) {
+                container.classList.remove('hidden');
+            } else {
+                container.classList.add('hidden');
+                document.getElementById('progressFill').style.width = '0%';
+            }
+        }
+
+        function updateProgress(percentage) {
+            document.getElementById('progressFill').style.width = percentage + '%';
+        }
+
+        function showMessage(message, type) {
+            const messagesDiv = document.getElementById('messages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = type === 'error' ? 'error-message' : 'success-message';
+            messageDiv.textContent = message;
+            
+            messagesDiv.innerHTML = '';
+            messagesDiv.appendChild(messageDiv);
+            
+            // Auto-hide after 5 seconds
+            setTimeout(() => {
+                messageDiv.remove();
+            }, 5000);
+        }
+
+        function clearMessages() {
+            document.getElementById('messages').innerHTML = '';
+        }
+
+        // Bulk paste functionality
+        function toggleBulkPaste() {
+            const bulkSection = document.getElementById('bulkPasteSection');
+            bulkSection.classList.toggle('hidden');
+        }
+
+        function processPathList(pathText) {
+            if (!pathText) return [];
+            
+            return pathText
+                .split('\n')                          // Split by lines
+                .map(line => line.trim())             // Trim whitespace
+                .filter(line => line.length > 0)      // Remove empty lines
+                .map(line => {
+                    // Remove surrounding quotes (single or double)
+                    if ((line.startsWith('"') && line.endsWith('"')) || 
+                        (line.startsWith("'") && line.endsWith("'"))) {
+                        line = line.slice(1, -1);
+                    }
+                    return line.trim();
+                })
+                .filter(path => path.length > 0);     // Remove empty paths after quote removal
+        }
+
+        function applyBulkPaths() {
+            const padPaths = processPathList(document.getElementById('bulkPadPaths').value);
+            const subVmPaths = processPathList(document.getElementById('bulkSubVmPaths').value);
+            const subSmePaths = processPathList(document.getElementById('bulkSubSmePaths').value);
+
+            if (padPaths.length === 0 && subVmPaths.length === 0 && subSmePaths.length === 0) {
+                showMessage('Please enter at least one path to apply.', 'error');
+                return;
+            }
+
+            if (parsedData.length === 0) {
+                showMessage('No data rows available. Please parse XML files first.', 'error');
+                return;
+            }
+
+            let appliedCount = 0;
+            let appliedDetails = [];
+
+            // Apply PAD paths
+            if (padPaths.length > 0) {
+                let padApplied = 0;
+                padPaths.forEach((path, index) => {
+                    if (index < parsedData.length) {
+                        parsedData[index].padPath = path;
+                        padApplied++;
+                        appliedCount++;
+                    }
+                });
+                appliedDetails.push(`${padApplied} PAD paths`);
+            }
+
+            // Apply Subtitle VM paths
+            if (subVmPaths.length > 0) {
+                let vmApplied = 0;
+                subVmPaths.forEach((path, index) => {
+                    if (index < parsedData.length) {
+                        parsedData[index].subtitleVmPath = path;
+                        vmApplied++;
+                        appliedCount++;
+                    }
+                });
+                appliedDetails.push(`${vmApplied} Subtitle VM paths`);
+            }
+
+            // Apply Subtitle SME paths
+            if (subSmePaths.length > 0) {
+                let smeApplied = 0;
+                subSmePaths.forEach((path, index) => {
+                    if (index < parsedData.length) {
+                        parsedData[index].subtitleSmePath = path;
+                        smeApplied++;
+                        appliedCount++;
+                    }
+                });
+                appliedDetails.push(`${smeApplied} Subtitle SME paths`);
+            }
+
+            updateDataTable();
+            
+            const detailsMsg = appliedDetails.length > 0 ? ` (${appliedDetails.join(', ')})` : '';
+            showMessage(`Successfully applied ${appliedCount} total paths${detailsMsg} to the data rows.`, 'success');
+            
+            // Update validation summary after bulk update
+            updateValidationSummary();
+            
+            // Show warning if some paths couldn't be applied
+            const totalPathsProvided = padPaths.length + subVmPaths.length + subSmePaths.length;
+            if (totalPathsProvided > parsedData.length) {
+                const excess = totalPathsProvided - appliedCount;
+                showMessage(`Note: ${excess} paths were not applied because there are only ${parsedData.length} data rows available.`, 'error');
+            }
+            
+            // Close the bulk paste section
+            document.getElementById('bulkPasteSection').classList.add('hidden');
+        }
+
+        function clearBulkPaths() {
+            document.getElementById('bulkPadPaths').value = '';
+            document.getElementById('bulkSubVmPaths').value = '';
+            document.getElementById('bulkSubSmePaths').value = '';
+        }
+
+        let selectedRowIndex = null;
+
+        function showRowDetails(index) {
+            const row = parsedData[index];
+            if (!row) return;
+
+            // Remove previous selection
+            const allRows = document.querySelectorAll('.data-row');
+            allRows.forEach(r => r.classList.remove('selected'));
+            
+            // Add selection to current row
+            const currentRow = document.querySelector(`.data-row[data-index="${index}"]`);
+            if (currentRow) {
+                currentRow.classList.add('selected');
+            }
+
+            selectedRowIndex = index;
+
+            // Extract episode information for validation status
+            const padEpisode = extractEpisodeFromPath(row.padPath);
+            const titleEpisode = getEpisodeFromTitle(row.titleEpLocal);
+            const episodeMatch = padEpisode && titleEpisode && padEpisode === titleEpisode;
+
+            // Build details content
+            const detailsContent = `
+                <div class="details-grid">
+                    <div class="detail-group">
+                        <div class="detail-group-title">🎬 Media Information</div>
+                        <div class="detail-item">
+                            <span class="detail-label">M6 ID:</span>
+                            <span class="detail-value ${!row.m6Id ? 'empty' : ''}">${row.m6Id || 'Not set'}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Program (Local):</span>
+                            <span class="detail-value ${!row.titlePgmLocal ? 'empty' : ''}">${row.titlePgmLocal || 'Not set'}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Episode (Local):</span>
+                            <span class="detail-value ${!row.titleEpLocal ? 'empty' : ''}">${row.titleEpLocal || 'Not set'}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Program (VO):</span>
+                            <span class="detail-value ${!row.titlePgmVo ? 'empty' : ''}">${row.titlePgmVo || 'Not set'}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Episode (VO):</span>
+                            <span class="detail-value ${!row.titleEpVo ? 'empty' : ''}">${row.titleEpVo || 'Not set'}</span>
+                        </div>
+                    </div>
+
+                    <div class="detail-group">
+                        <div class="detail-group-title">📁 File Paths</div>
+                        <div class="detail-item">
+                            <span class="detail-label">PAD Path:</span>
+                            <span class="detail-value ${!row.padPath ? 'empty' : ''}" style="font-size: 11px;">${row.padPath || 'Not set'}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Subtitle VM:</span>
+                            <span class="detail-value ${!row.subtitleVmPath ? 'empty' : ''}" style="font-size: 11px;">${row.subtitleVmPath || 'Not set'}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Subtitle SME:</span>
+                            <span class="detail-value ${!row.subtitleSmePath ? 'empty' : ''}" style="font-size: 11px;">${row.subtitleSmePath || 'Not set'}</span>
+                        </div>
+                        ${padEpisode ? `
+                        <div class="detail-item">
+                            <span class="detail-label">Episode Check:</span>
+                            <span class="detail-value">
+                                <span class="episode-check ${episodeMatch ? 'episode-match' : 'episode-mismatch'}">
+                                    ${episodeMatch ? '✓ Match' : '⚠️ Mismatch'}: Path EP${padEpisode} vs Title EP${titleEpisode || '?'}
+                                </span>
+                            </span>
+                        </div>
+                        ` : ''}
+                    </div>
+
+                    <div class="detail-group">
+                        <div class="detail-group-title">⚙️ Technical Settings</div>
+                        <div class="detail-item">
+                            <span class="detail-label">Film Format:</span>
+                            <span class="detail-value">${row.filmFormat || 'Not set'}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Audio Preset:</span>
+                            <span class="detail-value">${row.audioPreset || 'Not set'}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Language VO:</span>
+                            <span class="detail-value">${row.languageVo || 'Not set'}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">XML Needed:</span>
+                            <span class="detail-value">${row.xmlNeeded || 'Not set'}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Revision ID:</span>
+                            <span class="detail-value">${row.revisionId || 'Not set'}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Source File:</span>
+                            <span class="detail-value" style="font-size: 11px;">${row.fileName || 'Not set'}</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="detail-group" style="grid-column: 1 / -1; margin-top: 10px;">
+                    <div class="detail-group-title">⚡ Quick Actions</div>
+                    <div class="action-buttons" style="justify-content: flex-start; margin-top: 10px;">
+                        ${row.m6Id ? `<button onclick="copyToClipboard('${row.m6Id}')" style="font-size: 12px; padding: 8px 16px;">📋 Copy M6 ID</button>` : ''}
+                        ${row.padPath ? `<button onclick="copyToClipboard('${row.padPath.replace(/\\/g, '\\\\')}')" style="font-size: 12px; padding: 8px 16px;">📋 Copy PAD Path</button>` : ''}
+                        ${row.titleEpLocal ? `<button onclick="copyToClipboard('${row.titleEpLocal}')" style="font-size: 12px; padding: 8px 16px;">📋 Copy Episode Title</button>` : ''}
+                    </div>
+                    <p style="color: #888888; font-size: 11px; margin-top: 10px;">
+                        💡 Use ↑↓ arrow keys to navigate between rows • Press ESC to close
+                    </p>
+                </div>
+            `;
+
+            // Update panel
+            document.getElementById('detailsTitle').innerHTML = `
+                Row Details 
+                <span class="row-number-badge">#${index + 1} of ${parsedData.length}</span>
+            `;
+            document.getElementById('detailsContent').innerHTML = detailsContent;
+            
+            // Show panel
+            const panel = document.getElementById('detailsPanel');
+            panel.classList.remove('hidden');
+            
+            // Scroll to panel
+            panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        function copyToClipboard(text) {
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(text).then(() => {
+                    showMessage('Copied to clipboard!', 'success');
+                }).catch(err => {
+                    // Fallback for older browsers
+                    const textarea = document.createElement('textarea');
+                    textarea.value = text;
+                    document.body.appendChild(textarea);
+                    textarea.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(textarea);
+                    showMessage('Copied to clipboard!', 'success');
+                });
+            } else {
+                // Fallback for older browsers
+                const textarea = document.createElement('textarea');
+                textarea.value = text;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                showMessage('Copied to clipboard!', 'success');
+            }
+        }
+
+        function closeDetailsPanel() {
+            const panel = document.getElementById('detailsPanel');
+            panel.classList.add('hidden');
+            
+            // Remove row selection
+            const allRows = document.querySelectorAll('.data-row');
+            allRows.forEach(r => r.classList.remove('selected'));
+            
+            selectedRowIndex = null;
+        }
+
+        // Update details panel if a selected row's data changes
+        function refreshDetailsIfOpen() {
+            if (selectedRowIndex !== null && selectedRowIndex < parsedData.length) {
+                showRowDetails(selectedRowIndex);
+            }
+        }
+    </script>
+</body>
+</html>
